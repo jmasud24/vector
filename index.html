@@ -1,0 +1,1815 @@
+<!doctype html>
+<html lang="bn">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=5"
+    />
+    <title>আপেক্ষিক বেগ: মানুষ/গাড়ি, বৃষ্টি ও বাতাস (ভেক্টর বিশ্লেষণ)</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Kalpurush Font CDN & Google Fonts Fallback -->
+    <link href="https://fonts.maateen.me/kalpurush/font.css" rel="stylesheet" />
+    <link
+      href="https://cdn.msar.me/fonts/kalpurush/font.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- MathJax CDN কনফিগারেশন -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["$", "$"],
+            ["\\(", "\\)"],
+          ],
+          displayMath: [
+            ["$$", "$$"],
+            ["\\[", "\\]"],
+          ],
+          processEscapes: true,
+          macros: {
+            vac: ["\\vec{#1}", 1],
+          },
+        },
+        options: {
+          enableMenu: false,
+        },
+        chtml: {
+          mtextInheritFont: true, // শুধুমাত্র \text{} এর বাংলা টেক্সটের জন্য কালপুরুষ ফন্ট প্রযোজ্য হবে
+          scale: 1,
+        },
+        svg: {
+          mtextInheritFont: true,
+          fontCache: "global",
+        },
+        startup: {
+          typeset: false,
+        },
+      };
+    </script>
+    <script
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"
+    ></script>
+
+    <style>
+      /* কালপুরুষ ও নটো সেরিফ বেঙ্গলি ফন্ট সংজ্ঞায়ন */
+      @font-face {
+        font-family: "Kalpurush";
+        src:
+          local("Kalpurush"),
+          local("Kalpurush ANSI"),
+          url("https://fonts.maateen.me/kalpurush/font.woff2") format("woff2"),
+          url("https://fonts.maateen.me/kalpurush/font.woff") format("woff"),
+          url("https://cdn.msar.me/fonts/kalpurush/Kalpurush.ttf")
+            format("truetype");
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      body {
+        font-family: "Kalpurush", "Noto Serif Bengali", serif;
+        background: #f1f5f9;
+        color: #0f172a;
+      }
+      .tabular-nums {
+        font-family: "IBM Plex Sans", sans-serif;
+      }
+      .card {
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+      }
+      /* MathJax বাংলা টেক্সট ও মোবাইল স্ক্রোল কনফিগারেশন */
+      mjx-container {
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        padding: 4px 0 !important;
+        -webkit-overflow-scrolling: touch;
+      }
+      /* শুধুমাত্র \text{} ব্লকের ভেতরের বাংলা টেক্সট কালপুরুষ ফন্টে থাকবে, 
+         আর মূল ল্যাটেক ভেরিয়েবল (v, î, ĵ, α ইত্যাদি) নিজস্ব ক্লাসিক্যাল LaTeX Computer Modern Math ফন্টেই থাকবে */
+      mjx-container mjx-utext,
+      mjx-container mjx-mtext,
+      mjx-utext,
+      mjx-mtext {
+        font-family: "Kalpurush", "Noto Serif Bengali", serif !important;
+      }
+      .chip {
+        border-radius: 8px;
+        padding: 10px 14px;
+        border: 1.5px solid;
+        transition: all 0.2s ease-in-out;
+      }
+      .wet {
+        background: #dbeafe;
+        border-color: #3b82f6;
+        color: #1e3a8a;
+      }
+      .dry {
+        background: #f1f5f9;
+        border-color: #94a3b8;
+        color: #475569;
+      }
+      mjx-utext {
+        margin-left: 2px !important;
+        padding: 0 !important;
+      }
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button {
+        opacity: 1;
+      }
+      /* মোবাইল রেস্পন্সিভ স্ক্রোলবার */
+      ::-webkit-scrollbar {
+        height: 6px;
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen antialiased">
+    <header class="max-w-7xl mx-auto px-3 sm:px-4 pt-5 sm:pt-6 pb-4">
+      <div class="border-b border-slate-300 pb-3">
+        <h1
+          class="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 tracking-tight"
+        >
+          আপেক্ষিক বেগ: মানুষ/গাড়ি, বৃষ্টি ও বাতাস (ভেক্টর বিশ্লেষণ)
+        </h1>
+        <p class="text-slate-600 mt-2 text-sm sm:text-base leading-relaxed">
+          একক ভেক্টর $\hat{i}$ এবং $\hat{j}$ এর সাহায্যে মানুষের (গাড়ির)
+          সাপেক্ষে বৃষ্টির আপাত আপেক্ষিক বেগ:
+        </p>
+        <div
+          class="overflow-x-auto py-1.5 mt-1 bg-white/80 px-3 rounded-lg border border-slate-200 shadow-sm"
+        >
+          $$\vec{v}_{\text{বা·বৃ·মা}} = \vec{v}_{\text{বা}} +
+          \vec{v}_{\text{বৃ}} - \vec{v}_{\text{মা}}$$
+        </div>
+      </div>
+    </header>
+
+    <main
+      class="max-w-7xl mx-auto px-3 sm:px-4 pb-12 grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6"
+    >
+      <!-- বাম পাশের কন্ট্রোল প্যানেল (ইনপুট বক্স) -->
+      <aside
+        class="card p-4 sm:p-5 h-fit lg:sticky lg:top-4 order-2 lg:order-1"
+      >
+        <h2
+          class="text-lg sm:text-xl font-bold text-slate-800 mb-4 border-b pb-2 flex items-center justify-between"
+        >
+          <span>চলকের মান ইনপুট</span>
+          <span class="text-xs font-normal text-slate-500">SI একক (m/s)</span>
+        </h2>
+
+        <div class="space-y-4 text-sm">
+          <!-- Car / Man velocity -->
+          <div class="bg-amber-50 p-3 rounded-lg border border-amber-200">
+            <label for="vc" class="block font-semibold text-amber-900 mb-1">
+              মানুষ/গাড়ির বেগ $v_{\text{মা}}$ ($\text{m/s}$):
+            </label>
+            <div class="flex items-center gap-2">
+              <input
+                id="vc"
+                type="number"
+                step="0.5"
+                value="12"
+                class="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 tabular-nums focus:outline-none focus:ring-2 focus:ring-amber-500 font-semibold text-base"
+              />
+              <span class="text-xs text-amber-800 font-medium whitespace-nowrap"
+                >ডানে (+$\hat{i}$)</span
+              >
+            </div>
+          </div>
+
+          <!-- Wind velocity -->
+          <div class="bg-teal-50 p-3 rounded-lg border border-teal-200">
+            <label for="vw" class="block font-semibold text-teal-900 mb-1">
+              বাতাসের বেগ $v_{\text{বা}}$ ($\text{m/s}$):
+            </label>
+            <div class="flex items-center gap-2">
+              <input
+                id="vw"
+                type="number"
+                step="0.5"
+                value="4"
+                class="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 tabular-nums focus:outline-none focus:ring-2 focus:ring-teal-500 font-semibold text-base"
+              />
+              <span class="text-xs text-teal-800 font-medium whitespace-nowrap"
+                >ডানে (+$\hat{i}$)</span
+              >
+            </div>
+            <p class="text-[11px] text-teal-700 mt-1">
+              বিপরীত মুখে (বামে) বাতাস বইলে ঋণাত্মক (-) মান দিন।
+            </p>
+          </div>
+
+          <!-- Rain actual velocity -->
+          <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+            <label for="vr" class="block font-semibold text-blue-900 mb-1">
+              বৃষ্টির প্রকৃত বেগ $v_{\text{বৃ}}$ ($\text{m/s}$):
+            </label>
+            <div class="flex items-center gap-2">
+              <input
+                id="vr"
+                type="number"
+                min="0"
+                step="0.5"
+                value="10"
+                class="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 tabular-nums focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold text-base"
+              />
+              <span class="text-xs text-blue-800 font-medium whitespace-nowrap"
+                >খাড়া নিচে (-$\hat{j}$)</span
+              >
+            </div>
+          </div>
+
+          <!-- Glass angles -->
+          <div
+            class="bg-indigo-50 p-3 rounded-lg border border-indigo-200 space-y-3"
+          >
+            <span
+              class="block font-semibold text-indigo-950 border-b border-indigo-200 pb-1"
+              >কাচের আনতি কোণ (উলম্বের সাথে)</span
+            >
+            <div>
+              <label
+                for="tf"
+                class="block text-indigo-900 mb-1 text-xs font-medium"
+                >সামনের উইন্ডশিল্ড কোণ (উলম্বের সাথে) $\theta_f$
+                (ডিগ্রি):</label
+              >
+              <input
+                id="tf"
+                type="number"
+                min="5"
+                max="80"
+                step="1"
+                value="35"
+                class="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 tabular-nums focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold"
+              />
+            </div>
+            <div>
+              <label
+                for="tr"
+                class="block text-indigo-900 mb-1 text-xs font-medium"
+                >পেছনের কাচের কোণ (উলম্বের সাথে) $\theta_r$ (ডিগ্রি):</label
+              >
+              <input
+                id="tr"
+                type="number"
+                min="5"
+                max="80"
+                step="1"
+                value="25"
+                class="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 tabular-nums focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- অ্যাকশন বাটন -->
+        <div class="flex gap-2 mt-5">
+          <button
+            id="pause"
+            class="flex-1 rounded-lg bg-slate-800 hover:bg-slate-900 active:scale-[0.98] text-white py-2.5 text-sm font-semibold transition shadow"
+          >
+            অ্যানিমেশন থামান
+          </button>
+          <button
+            id="reset"
+            class="flex-1 rounded-lg border border-slate-300 hover:bg-slate-100 active:scale-[0.98] py-2.5 text-sm font-semibold transition"
+          >
+            রিসেট
+          </button>
+        </div>
+
+        <div
+          class="mt-4 text-xs text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-200"
+        >
+          <p>
+            <b>সংকেত নির্দেশিকা:</b> গাড়ির গতিকে ধনাত্মক $x$-অক্ষ ($+\hat{i}$)
+            এবং ওপরের দিককে ধনাত্মক $y$-অক্ষ ($+\hat{j}$) ধরা হয়েছে। কাচের
+            কোণগুলো উলম্ব রেখা থেকে পরিমাপকৃত।
+          </p>
+        </div>
+      </aside>
+
+      <!-- ডান পাশের ভিজ্যুয়ালাইজেশন ও গণিত শাখা -->
+      <section class="space-y-5 min-w-0 order-1 lg:order-2">
+        <!-- ফলাফল স্ট্যাটাস কার্ড -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" aria-live="polite">
+          <div id="chipF" class="chip"></div>
+          <div id="chipR" class="chip"></div>
+          <div id="chipT" class="chip wet">
+            <b class="text-base">গাড়ির ছাদ</b>
+            <div class="text-xs mt-1 font-medium">বৃষ্টি পড়লে সবসময় ভিজবে</div>
+          </div>
+        </div>
+
+        <div class="card p-4 bg-slate-900 text-white border-none shadow-md">
+          <h3
+            class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1"
+          >
+            ফলাফল সারাংশ
+          </h3>
+          <p
+            id="summary"
+            class="text-base sm:text-lg md:text-xl font-bold text-amber-300"
+          ></p>
+        </div>
+
+        <!-- সিচুয়েশন সুইচিং অপশন (গাড়ি vs ছাতা) -->
+        <div class="card p-3 sm:p-4 bg-gradient-to-r from-slate-900 to-indigo-950 text-white border-none shadow-md">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span class="text-[11px] font-bold tracking-wider text-indigo-300 uppercase">সিচুয়েশন নির্বাচন (Situation Mode):</span>
+              <p class="text-xs text-slate-300 mt-0.5">গাড়ির উইন্ডশিল্ড অথবা মানুষের ছাতা ধরার অ্যানিমেশনের মধ্যে পরিবর্তন করুন</p>
+            </div>
+            <div class="inline-flex rounded-lg border border-indigo-700/60 p-1 bg-slate-950/70 shadow-inner text-xs sm:text-sm font-semibold self-start sm:self-auto">
+              <button
+                id="btnSitCar"
+                class="px-3.5 py-2 rounded-md bg-indigo-600 text-white shadow-sm flex items-center gap-2 transition"
+              >
+                <span>🚗</span> <span>১. গাড়ি ও উইন্ডশিল্ড</span>
+              </button>
+              <button
+                id="btnSitUmbrella"
+                class="px-3.5 py-2 rounded-md text-slate-300 hover:text-white hover:bg-white/10 flex items-center gap-2 transition"
+              >
+                <span>☂️</span> <span>২. মানুষ ও ছাতা</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Canvas 1: আপেক্ষিক গতি ও অ্যানিমেশন -->
+        <div class="card p-3 sm:p-4">
+          <div class="mb-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <div>
+              <h2 id="c1Title" class="text-lg sm:text-xl font-bold text-slate-800">
+                মানুষ/গাড়ির সাপেক্ষে বৃষ্টির অ্যানিমেশন (Car Frame)
+              </h2>
+              <p id="c1Sub" class="text-xs text-slate-500">
+                গাড়িটি স্থির। রাস্তা পেছনের দিকে সরে যাচ্ছে এবং বৃষ্টির রেখাগুলো
+                আপাত আপেক্ষিক বেগ ভেক্টর $\vec{v}_{\text{বা·বৃ·মা}}$ বরাবর পড়ছে।
+              </p>
+            </div>
+            <span id="c1Badge" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 self-start sm:self-auto border border-amber-300 whitespace-nowrap">
+              🚗 গাড়ি মোড সক্রিয়
+            </span>
+          </div>
+          <canvas
+            id="c1"
+            class="w-full rounded-lg block border border-slate-800 shadow-inner"
+          ></canvas>
+        </div>
+
+        <!-- Canvas 2: ভেক্টর ডায়াগ্রাম -->
+        <div class="card p-3 sm:p-4">
+          <div
+            class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2"
+          >
+            <div>
+              <h2 class="text-lg sm:text-xl font-bold text-slate-800">
+                ভেক্টর ডায়াগ্রাম (Vector Diagram)
+              </h2>
+              <p class="text-xs text-slate-500">
+                একই সাধারণ মূলবিন্দু $O(0,0)$ থেকে সকল ভেক্টরের সঠিক উপস্থাপন
+              </p>
+            </div>
+            <!-- ভিউ টগল বাটন (মোবাইল ও ডেস্কটপ উভয়ের জন্য) -->
+            <div
+              class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg text-xs font-semibold self-start sm:self-auto border border-slate-200"
+            >
+              <button
+                id="btnBoth"
+                class="px-2.5 py-1 rounded bg-white shadow-sm text-slate-800 transition"
+              >
+                উভয় চিত্র
+              </button>
+              <button
+                id="btnGround"
+                class="px-2.5 py-1 rounded hover:bg-white/60 text-slate-600 transition"
+              >
+                ১. ভূমির কাঠামো
+              </button>
+              <button
+                id="btnRelative"
+                class="px-2.5 py-1 rounded hover:bg-white/60 text-slate-600 transition"
+              >
+                ২. আপেক্ষিক বেগ
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="overflow-hidden rounded-lg border border-slate-200 bg-white"
+          >
+            <canvas id="c2" class="w-full block shadow-inner"></canvas>
+          </div>
+
+          <!-- লেজেন্ড / পরিচিতি -->
+          <div
+            class="flex flex-wrap gap-x-4 sm:gap-x-6 gap-y-2 text-xs sm:text-sm mt-3 pt-2.5 border-t border-slate-100 font-medium"
+          >
+            <span class="flex items-center gap-1.5"
+              ><i class="w-3 h-3 rounded-full inline-block bg-[#d97706]"></i>
+              $\vec{v}_{\text{মা}}$ (মানুষ/গাড়ির বেগ)</span
+            >
+            <span class="flex items-center gap-1.5"
+              ><i class="w-3 h-3 rounded-full inline-block bg-[#0d9488]"></i>
+              $\vec{v}_{\text{বা}}$ (বাতাসের বেগ)</span
+            >
+            <span class="flex items-center gap-1.5"
+              ><i class="w-3 h-3 rounded-full inline-block bg-[#2563eb]"></i>
+              $\vec{v}_{\text{বৃ}}$ (বৃষ্টির প্রকৃত বেগ - খাড়া নিচে)</span
+            >
+            <span class="flex items-center gap-1.5"
+              ><i class="w-3 h-3 rounded-full inline-block bg-[#e11d48]"></i>
+              $\vec{v}_{\text{বা·বৃ·মা}}$ (আপাত আপেক্ষিক বেগ)</span
+            >
+          </div>
+        </div>
+
+        <!-- Live Step-by-Step Calculation using i, j, k -->
+        <div class="card p-4 sm:p-5">
+          <h2
+            class="text-lg sm:text-xl font-bold text-slate-800 mb-3 border-b pb-2"
+          >
+            ধাপে ধাপে ভেক্টর গাণিতিক বিশ্লেষণ ($\hat{i}, \hat{j}$ পদ্ধতিতে)
+          </h2>
+          <div id="calc" class="text-slate-700 leading-relaxed space-y-3">
+            <!-- MathJax এর মাধ্যমে এখানে নিরাপদে গণিত রেন্ডার হবে -->
+          </div>
+        </div>
+
+        
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const RAD = Math.PI / 180;
+      const $ = (id) => document.getElementById(id);
+
+      const defaultCfg = {
+        vc: 12,
+        vw: 4,
+        vr: 10,
+        tf: 35,
+        tr: 25,
+      };
+
+      const f = (n) => (Math.round(n * 10) / 10).toFixed(1);
+
+      let P = {};
+      let viewMode = "both"; // 'both', 'ground', 'relative'
+      let currentSituation = "car"; // 'car' or 'umbrella'
+
+      function setSituation(sit) {
+        currentSituation = sit;
+        if (sit === "car") {
+          $("btnSitCar").className =
+            "px-3.5 py-2 rounded-md bg-indigo-600 text-white shadow-sm flex items-center gap-2 transition";
+          $("btnSitUmbrella").className =
+            "px-3.5 py-2 rounded-md text-slate-300 hover:text-white hover:bg-white/10 flex items-center gap-2 transition";
+          $("c1Title").textContent =
+            "মানুষ/গাড়ির সাপেক্ষে বৃষ্টির অ্যানিমেশন (Car Frame)";
+          $("c1Sub").textContent =
+            "গাড়িটি স্থির। রাস্তা পেছনের দিকে সরে যাচ্ছে এবং বৃষ্টির রেখাগুলো আপাত আপেক্ষিক বেগ ভেক্টর বরাবর পড়ছে।";
+          $("c1Badge").className =
+            "text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 self-start sm:self-auto border border-amber-300 whitespace-nowrap";
+          $("c1Badge").textContent = "🚗 গাড়ি মোড সক্রিয়";
+        } else {
+          $("btnSitCar").className =
+            "px-3.5 py-2 rounded-md text-slate-300 hover:text-white hover:bg-white/10 flex items-center gap-2 transition";
+          $("btnSitUmbrella").className =
+            "px-3.5 py-2 rounded-md bg-emerald-600 text-white shadow-sm flex items-center gap-2 transition";
+          $("c1Title").textContent =
+            "মানুষের সাপেক্ষে বৃষ্টির অ্যানিমেশন ও ছাতা ধরার সঠিক কোণ";
+          $("c1Sub").textContent =
+            "ব্যক্তি হেঁটে চলছে। বৃষ্টি যে আপাত আপেক্ষিক কোণে আসছে, ব্যক্তি ঠিক সেই কোণে ছাতা ধরে নিজেকে সুরক্ষিত রাখছে।";
+          $("c1Badge").className =
+            "text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 self-start sm:self-auto border border-emerald-300 whitespace-nowrap";
+          $("c1Badge").textContent = "☂️ ছাতা মোড সক্রিয়";
+        }
+        updateUI();
+      }
+
+      function readInputs() {
+        const vc = parseFloat($("vc").value) || 0;
+        const vw = parseFloat($("vw").value) || 0;
+        const vr = Math.max(0, parseFloat($("vr").value) || 0);
+        const tf = Math.max(5, Math.min(85, parseFloat($("tf").value) || 35));
+        const tr = Math.max(5, Math.min(85, parseFloat($("tr").value) || 25));
+
+        const ux = vw - vc;
+        const mag = Math.hypot(ux, vr);
+        const alpha = vr > 0 ? Math.atan2(ux, vr) / RAD : 0;
+        const tanF = Math.tan(tf * RAD);
+        const tanR = Math.tan(tr * RAD);
+
+        const fw = vr > 0 && ux < vr * tanF;
+        const rw = vr > 0 && ux > -vr * tanR;
+
+        P = { vc, vw, vr, tf, tr, ux, mag, alpha, tanF, tanR, fw, rw };
+
+        updateUI();
+        queueMathJax();
+      }
+
+      function updateUI() {
+        const absAlpha = f(Math.abs(P.alpha || 0));
+        const dirText =
+          (P.ux || 0) < 0 ? "সামনে থেকে পেছনের দিকে" : "পেছন থেকে সামনের দিকে";
+
+        if (currentSituation === "car") {
+          const setChip = (el, name, wet) => {
+            el.className = "chip " + (wet ? "wet" : "dry");
+            el.innerHTML = `<b class="text-base">${name}</b><div class="text-xs mt-1 font-medium">${wet ? "বৃষ্টির কণা আঘাত করছে (ভিজবে)" : "ছায়াকৃত / সুরক্ষিত (শুকনো থাকবে)"}</div>`;
+          };
+
+          setChip($("chipF"), "সামনের উইন্ডশিল্ড", P.fw);
+          setChip($("chipR"), "পেছনের উইন্ডো", P.rw);
+
+          $("chipT").className = "chip " + (P.vr > 0 ? "wet" : "dry");
+          $("chipT").innerHTML =
+            `<b class="text-base">গাড়ির ছাদ</b><div class="text-xs mt-1 font-medium">${P.vr > 0 ? "বৃষ্টি পড়লে সবসময় ভিজবে" : "বৃষ্টি নেই, শুকনো থাকবে"}</div>`;
+
+          if (P.vr <= 0) {
+            $("summary").textContent =
+              "কোনো বৃষ্টি পড়ছে না (v_বৃ = 0 m/s)। গাড়ি সম্পূর্ণ শুকনো থাকবে।";
+          } else if (P.fw && P.rw) {
+            $("summary").textContent =
+              "বৃষ্টি সামনের উইন্ডশিল্ড এবং পেছনের কাচ—উভয়টিকেই ভেজাবে!";
+          } else if (P.fw) {
+            $("summary").textContent =
+              "বৃষ্টি শুধুমাত্র গাড়ির সামনের উইন্ডশিল্ডকে ভেজাবে (পেছনের কাচ শুকনো থাকবে)।";
+          } else if (P.rw) {
+            $("summary").textContent =
+              "বৃষ্টি শুধুমাত্র গাড়ির পেছনের কাচকে ভেজাবে (সামনের কাচ শুকনো থাকবে)।";
+          } else {
+            $("summary").textContent =
+              "কোনো কাচেই সরাসরি বৃষ্টি পড়বে না (উভয় কাচই ছায়াকৃত)।";
+          }
+        } else {
+          // Umbrella mode
+          $("chipF").className =
+            "chip bg-emerald-50 border-emerald-400 text-emerald-950";
+          $("chipF").innerHTML =
+            `<b class="text-base">☂️ ছাতা ধরার কোণ</b><div class="text-xs mt-1 font-semibold text-emerald-800">উলম্বের সাথে ${absAlpha}° (${dirText})</div>`;
+
+          $("chipR").className = "chip bg-blue-50 border-blue-400 text-blue-950";
+          $("chipR").innerHTML =
+            `<b class="text-base">💧 বৃষ্টির আপাত বেগ</b><div class="text-xs mt-1 font-semibold text-blue-800">|v_বা·বৃ·মা| = ${f(P.mag)} m/s</div>`;
+
+          $("chipT").className = "chip bg-teal-50 border-teal-400 text-teal-950";
+          $("chipT").innerHTML =
+            `<b class="text-base">🛡️ ব্যক্তির সুরক্ষা</b><div class="text-xs mt-1 font-semibold text-teal-800">${P.vr > 0 ? "ছাতা ঠিকমতো ধরায় ব্যক্তি শুকনো থাকবে" : "বৃষ্টি নেই, ব্যক্তি শুকনো"}</div>`;
+
+          if (P.vr <= 0) {
+            $("summary").textContent =
+              "কোনো বৃষ্টি পড়ছে না (v_বৃ = 0 m/s)। ছাতা খোলার প্রয়োজন নেই।";
+          } else {
+            $("summary").textContent =
+              `বৃষ্টি থেকে নিজেকে সম্পূর্ণ সুরক্ষিত রাখতে উলম্বের সাথে ঠিক ${absAlpha}° কোণে ${dirText} হেলে ছাতা ধরতে হবে।`;
+          }
+        }
+      }
+
+      // MathJax রেন্ডারিং হ্যান্ডলার
+      let mjPromise = Promise.resolve();
+      let mjTimer = null;
+
+      function queueMathJax() {
+        clearTimeout(mjTimer);
+        mjTimer = setTimeout(renderMathJax, 100);
+      }
+
+      function renderMathJax() {
+        const { vc, vw, vr, ux, mag, alpha, tanF, tanR, fw, rw, tf, tr } = P;
+        const el = $("calc");
+
+        const signUx = ux >= 0 ? `+ ${f(ux)}` : `- ${f(Math.abs(ux))}`;
+        const signVw = vw >= 0 ? `${f(vw)}` : `- ${f(Math.abs(vw))}`;
+        const dirText =
+          ux < 0 ? "সামনে থেকে পেছনের দিকে" : "পেছন থেকে সামনের দিকে";
+
+        const absAlpha = f(Math.abs(alpha));
+
+        // বাংলায় বাস্তবসম্মত ভৌত বিশ্লেষণ ও কারণ
+        let frontReason = "";
+        let rearReason = "";
+
+        if (vr <= 0) {
+          frontReason = `বৃষ্টির প্রকৃত বেগ শূন্য ($v_{\\text{বৃ}} = 0\\ \\text{m/s}$), তাই কোনো বৃষ্টি পড়ছে না। ফলে সামনের কাচ শুকনো থাকবে।`;
+          rearReason = `বৃষ্টি না থাকায় পেছনের কাচও সম্পূর্ণ শুকনো থাকবে।`;
+        } else if (ux < 0) {
+          // গাড়ি বাতাসের চেয়ে দ্রুত চলছে, বৃষ্টি সামনে থেকে আসছে
+          frontReason = `গাড়ির সাপেক্ষে বৃষ্টি উলম্বের সাথে $\\alpha = ${absAlpha}^\\circ$ কোণে <b>সামনে থেকে পেছনের দিকে</b> আসছে। সামনের উইন্ডশিল্ডটি উলম্বের সাথে $\\theta_f = ${tf}^\\circ$ কোণে সামনের দিকে ঝুঁকে থাকায় সরাসরি বৃষ্টির গতিপথের মুখে পড়েছে। তাই বৃষ্টির আপাত কোণ যাই হোক না কেন, <b>সামনের উইন্ডশিল্ড অবশ্যই ভিজবে</b> (যা উপরের অ্যানিমেশন ও চিত্রে দেখা যাচ্ছে)।`;
+
+          if (rw) {
+            rearReason = `বৃষ্টি উলম্বের সাথে $\\alpha = ${absAlpha}^\\circ$ কোণে পড়ছে, যা পেছনের কাচের আনতি কোণ $\\theta_r = ${tr}^\\circ$ এর সমান বা কম (${absAlpha}° $\\le$ ${tr}°)। বৃষ্টি উলম্বের কাছাকাছি খাড়াভাবে পড়ায় গাড়ির ছাদ পেছনের কাচকে আড়াল (ছায়াকৃত) করতে পারছে না। ফলে <b>পেছনের কাচও ভিজবে</b> (যা উপরের চিত্রে দেখা যাচ্ছে)।`;
+          } else {
+            rearReason = `বৃষ্টি উলম্বের সাথে $\\alpha = ${absAlpha}^\\circ$ কোণে সামনে থেকে পেছনের দিকে পড়ছে, কিন্তু পেছনের কাচটি উলম্বের সাথে $\\theta_r = ${tr}^\\circ$ কোণে পেছনের দিকে ঝুঁকে আছে (যা উপরের চিত্রে দেখা যাচ্ছে)। যেহেতু বৃষ্টির আপাত কোণ (${absAlpha}°) পেছনের কাচের কোণের (${tr}°) চেয়ে বেশি (${absAlpha}° $>$ ${tr}°), তাই বৃষ্টির কণাগুলো ছাদের ওপর দিয়ে পেছনের কাচকে এড়িয়ে চলে যায় (ছাদ পেছনের কাচকে ছায়াকৃত করে রাখে)। ফলে <b>পেছনের কাচ ভিজবে না (শুকনো থাকবে)</b>।`;
+          }
+        } else if (ux > 0) {
+          // বাতাস পেছনের দিক থেকে গাড়িকে অতিক্রম করছে
+          rearReason = `বাতাস দ্রুত থাকায় গাড়ির সাপেক্ষে বৃষ্টি <b>পেছন থেকে সামনের দিকে</b> আসছে। পেছনের কাচটি উলম্বের সাথে $\\theta_r = ${tr}^\\circ$ কোণে পেছনের দিকে ঝুঁকে সরাসরি বৃষ্টির মুখে রয়েছে, তাই <b>পেছনের কাচ অবশ্যই ভিজবে</b> (যা উপরের চিত্রে দেখা যাচ্ছে)।`;
+
+          if (fw) {
+            frontReason = `বৃষ্টি উলম্বের সাথে $\\alpha = ${absAlpha}^\\circ$ কোণে পড়ছে, যা সামনের কাচের কোণ $\\theta_f = ${tf}^\\circ$ এর সমান বা কম (${absAlpha}° $\\le$ ${tf}°)। খাড়াভাবে বৃষ্টির ধারাপাত হওয়ায় ছাদের আড়াল এড়িয়ে সামনের কাচেও পড়ছে, তাই <b>সামনের উইন্ডশিল্ডও ভিজবে</b>।`;
+          } else {
+            frontReason = `বৃষ্টি উলম্বের সাথে $\\alpha = ${absAlpha}^\\circ$ কোণে পেছন থেকে তীর্যকভাবে আসছে। যেহেতু বৃষ্টির আপাত কোণ (${absAlpha}°) সামনের কাচের ঢাল কোণ $\\theta_f = ${tf}^\\circ$ এর চেয়ে বেশি (${absAlpha}° $>$ ${tf}°), তাই গাড়ির ছাদ সামনের উইন্ডশিল্ডকে আড়াল করে রাখে। ফলে <b>সামনের উইন্ডশিল্ড ভিজবে না (শুকনো থাকবে)</b>।`;
+          }
+        } else {
+          // ux === 0, খাড়াভাবে বৃষ্টি পড়ছে
+          frontReason = `গাড়ি ও বাতাসের বেগ সমান হওয়ায় বৃষ্টি খাড়া উলম্বভাবে ($\\alpha = 0^\\circ$) পড়ছে। যেহেতু $0^\\circ \\le ${tf}^\\circ$, তাই সামনের কাচে সরাসরি বৃষ্টি পড়বে এবং <b>সামনের কাচ ভিজবে</b>।`;
+          rearReason = `একইভাবে $0^\\circ \\le ${tr}^\\circ$ হওয়ায় পেছনের কাচেও সরাসরি বৃষ্টি পড়বে এবং <b>পেছনের কাচও ভিজবে</b>।`;
+        }
+
+        const latexBlock = String.raw`
+  <div class="space-y-4">
+    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+      <p class="font-semibold text-slate-800 mb-2">১. ভূমির সাপেক্ষে মানুষ, বাতাস ও বৃষ্টির বেগ ভেক্টর রূপ:</p>
+      <div class="overflow-x-auto space-y-1">
+        <div>$$\vec{v}_{\text{মা}} = ${f(vc)}\hat{i}\ \text{m/s} \quad \text{(মানুষ/গাড়ির বেগ)}$$</div>
+        <div>$$\vec{v}_{\text{বা}} = ${signVw}\hat{i}\ \text{m/s} \quad \text{(বাতাসের বেগ)}$$</div>
+        <div>$$\vec{v}_{\text{বৃ}} = -${f(vr)}\hat{j}\ \text{m/s} \quad \text{(বৃষ্টির প্রকৃত বেগ - খাড়া নিচে)}$$</div>
+      </div>
+    </div>
+
+    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+      <p class="font-semibold text-slate-800 mb-2">২. মানুষ বা গাড়ির সাপেক্ষে বৃষ্টির আপাত আপেক্ষিক বেগ ($\vec{v}_{\text{বা·বৃ·মা}}$):</p>
+      <div class="overflow-x-auto space-y-1">
+        <div>$$\vec{v}_{\text{বা·বৃ·মা}} = \vec{v}_{\text{বা}} + \vec{v}_{\text{বৃ}} - \vec{v}_{\text{মা}}$$</div>
+        <div>$$\vec{v}_{\text{বা·বৃ·মা}} = (${f(vw)}\hat{i} - ${f(vr)}\hat{j}) - (${f(vc)}\hat{i}) = ${f(ux)}\hat{i} - ${f(vr)}\hat{j}\ \text{m/s}$$</div>
+        <div>$$|\vec{v}_{\text{বা·বৃ·মা}}| = \sqrt{(${f(ux)})^2 + (-${f(vr)})^2} = \mathbf{${f(mag)}}\ \text{m/s}$$</div>
+      </div>
+    </div>
+
+    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+      <p class="font-semibold text-slate-800 mb-2">৩. উলম্বের সাথে আপেক্ষিক বৃষ্টির আপাত কোণ ($\alpha$):</p>
+      <div class="overflow-x-auto space-y-1">
+        <div>$$\tan\alpha = \frac{|\hat{i}\ \text{এর সহগ}|}{|\hat{j}\ \text{এর সহগ}|} = \frac{${f(Math.abs(ux))}}{${f(vr)}} \implies \alpha = ${absAlpha}^\circ\ \text{(${dirText})},\ \text{অর্থাৎ উলম্বের সাথে } ${absAlpha}^\circ\ \text{কোণ করে বৃষ্টি পড়বে।}$$</div>
+      </div>
+    </div>
+
+    <div class="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-3.5 text-xs sm:text-sm">
+      <div>
+        <p class="font-bold text-slate-800 text-sm sm:text-base border-b pb-1.5 mb-2.5">৪. কাচ ভেজার শর্ত, ছাতার কোণ ও গাণিতিক সিদ্ধান্ত:</p>
+        
+        <!-- বাংলায় ভৌত ব্যাখ্যা ও সিদ্ধান্ত -->
+        <div class="bg-amber-50/80 p-3 rounded-lg border border-amber-200 space-y-2 text-slate-800">
+          <p class="font-bold text-amber-950 text-xs sm:text-sm">ক. বর্তমান কোণের মান অনুযায়ী গাড়ির উইন্ডশিল্ডের ভৌত ব্যাখ্যা (Physical Reasoning):</p>
+          <p>• <b>সামনের উইন্ডশিল্ড (কোণ $\theta_f = ${tf}^\circ$):</b> ${frontReason}</p>
+          <p>• <b>পেছনের কাচ (কোণ $\theta_r = ${tr}^\circ$):</b> ${rearReason}</p>
+        </div>
+
+        <!-- মানুষের ক্ষেত্রে ছাতা ধরার শর্ত -->
+        <div class="mt-3 bg-emerald-50/80 p-3 rounded-lg border border-emerald-200 space-y-1.5 text-slate-800">
+          <p class="font-bold text-emerald-950 text-xs sm:text-sm">গ. মানুষের ক্ষেত্রে ছাতা ধরার শর্ত ও অভিমুখ (Umbrella Protection):</p>
+          <p>ব্যক্তির সাপেক্ষে বৃষ্টি উলম্বের সাথে $\alpha = ${absAlpha}^\circ$ কোণে <b>${dirText}</b> আসছে। সম্পূর্ণ সুরক্ষা পেতে ছাতার উত্তল পৃষ্ঠকে সরাসরি আপেক্ষিক বৃষ্টির অভিমুখী রাখতে হবে।</p>
+          <p class="font-semibold text-emerald-900">• সিদ্ধান্ত: ব্যক্তিকে উলম্ব রেখা থেকে ঠিক <b>$\alpha = ${absAlpha}^\circ$ কোণে ${dirText} হেলে ছাতা ধরতে হবে</b> (যা উপরের 'মানুষ ও ছাতা' অ্যানিমেশনে প্রদর্শিত হচ্ছে)।</p>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+        if (window.MathJax && MathJax.typesetPromise) {
+          mjPromise = mjPromise
+            .then(() => {
+              MathJax.typesetClear([el]);
+              el.innerHTML = latexBlock;
+              return MathJax.typesetPromise([el]);
+            })
+            .catch(() => {});
+        } else {
+          el.innerHTML = latexBlock;
+        }
+      }
+
+      /* ================== Canvas 1 & 2 Setup ================== */
+      const c1 = $("c1"),
+        ctx1 = c1.getContext("2d");
+      const c2 = $("c2"),
+        ctx2 = c2.getContext("2d");
+
+      let W1 = 800,
+        H1 = 380,
+        W2 = 800,
+        H2 = 380,
+        DPR = 1;
+
+      function resizeCanvases() {
+        DPR = window.devicePixelRatio || 1;
+        const p1 = c1.parentElement.clientWidth - 24;
+        W1 = Math.max(300, p1);
+        W2 = W1;
+
+        // রেস্পন্সিভ হাইট কনফিগারেশন
+        const isMobileScreen = W2 < 640;
+        H1 = Math.min(360, Math.max(250, Math.round(W1 * 0.52)));
+
+        if (viewMode === "both" && isMobileScreen) {
+          H2 = 620;
+        } else {
+          H2 = Math.min(400, Math.max(340, Math.round(W2 * 0.52)));
+        }
+
+        c1.width = W1 * DPR;
+        c1.height = H1 * DPR;
+        c1.style.width = W1 + "px";
+        c1.style.height = H1 + "px";
+
+        c2.width = W2 * DPR;
+        c2.height = H2 * DPR;
+        c2.style.width = W2 + "px";
+        c2.style.height = H2 + "px";
+
+        initRain();
+      }
+
+      const RAIN_COUNT = 280;
+      let rain = [],
+        splashes = [],
+        wetGlow = [0, 0],
+        paused = false;
+      let roadOffset = 0,
+        wheelAngle = 0,
+        walkCycle = 0;
+      const groundY = () => H1 - 58;
+
+      function initRain() {
+        rain = [];
+        for (let i = 0; i < RAIN_COUNT; i++) {
+          rain.push({
+            x: Math.random() * (W1 + 300) - 150,
+            y: Math.random() * groundY(),
+            lengthMod: 0.8 + Math.random() * 0.5,
+            alpha: 0.35 + Math.random() * 0.45,
+          });
+        }
+      }
+
+      function localCarPolys() {
+        const h = 44;
+        const a = Math.tan(P.tf * RAD) * h;
+        const b = Math.tan(P.tr * RAD) * h;
+        return [
+          [-120, 18],
+          [120, 18],
+          [120, 48],
+          [98, 51],
+          [98 - a, 51 + h],
+          [-98 + b, 51 + h],
+          [-98, 51],
+          [-120, 48],
+        ];
+      }
+
+      function pointInPolygon(px, py, poly) {
+        let inside = false;
+        for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+          const xi = poly[i][0],
+            yi = poly[i][1];
+          const xj = poly[j][0],
+            yj = poly[j][1];
+          const intersect =
+            yi > py !== yj > py &&
+            px < ((xj - xi) * (py - yi)) / (yj - yi) + xi;
+          if (intersect) inside = !inside;
+        }
+        return inside;
+      }
+
+      function distToSegment(px, py, a, b) {
+        const dx = b[0] - a[0],
+          dy = b[1] - a[1];
+        const l2 = dx * dx + dy * dy || 1;
+        let t = ((px - a[0]) * dx + (py - a[1]) * dy) / l2;
+        t = Math.max(0, Math.min(1, t));
+        return Math.hypot(px - (a[0] + t * dx), py - (a[1] + t * dy));
+      }
+
+      function createSplash(x, y) {
+        if (splashes.length > 100) return;
+        for (let i = 0; i < 2; i++) {
+          splashes.push({
+            x,
+            y,
+            vx: (Math.random() - 0.5) * 60,
+            vy: -Math.random() * 40 - 20,
+            life: 0,
+          });
+        }
+      }
+
+      function drawScene(dt) {
+        const W = W1,
+          H = H1,
+          gy = groundY(),
+          cx = W / 2;
+        const scale = Math.min(1.2, W / 620);
+
+        ctx1.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+        const grad = ctx1.createLinearGradient(0, 0, 0, H);
+        grad.addColorStop(0, "#0f172a");
+        grad.addColorStop(1, "#1e293b");
+        ctx1.fillStyle = grad;
+        ctx1.fillRect(0, 0, W, H);
+
+        ctx1.fillStyle = "#090d16";
+        ctx1.fillRect(0, gy, W, H - gy);
+        ctx1.fillStyle = "#e2e8f0";
+
+        roadOffset = (roadOffset - P.vc * 12 * dt) % 100;
+        if (roadOffset < 0) roadOffset += 100;
+        for (let x = roadOffset - 100; x < W + 100; x += 90) {
+          ctx1.fillRect(x, gy + 26, 45, 4);
+        }
+
+        const simScale = 12;
+        const vx = P.ux * simScale;
+        const vy = P.vr * simScale;
+        const vMag = Math.hypot(vx, vy);
+        const active = P.vr > 0 && vMag > 0.5;
+
+        wetGlow[0] *= Math.exp(-dt * 3);
+        wetGlow[1] *= Math.exp(-dt * 3);
+
+        if (currentSituation === "car") {
+          // ================== গাড়ি ও উইন্ডশিল্ড দৃশ্য ==================
+          const toScreen = (p) => [cx + scale * p[0], gy - scale * p[1]];
+          const carLoc = localCarPolys();
+          const screenCar = carLoc.map(toScreen);
+
+          if (active) {
+            for (const p of rain) {
+              p.x += vx * dt;
+              p.y += vy * dt;
+
+              if (p.y > gy) {
+                createSplash(p.x, gy);
+                p.y = -20 - Math.random() * 40;
+                p.x = Math.random() * (W + 400) - 200;
+                continue;
+              }
+              if (p.x < -200 || p.x > W + 200 || p.y < -50) {
+                p.y = -20 - Math.random() * 40;
+                p.x = Math.random() * (W + 400) - 200;
+                continue;
+              }
+
+              if (pointInPolygon(p.x, p.y, screenCar)) {
+                const dFront = distToSegment(
+                  p.x,
+                  p.y,
+                  screenCar[3],
+                  screenCar[4],
+                );
+                const dRear = distToSegment(
+                  p.x,
+                  p.y,
+                  screenCar[5],
+                  screenCar[6],
+                );
+                if (dFront < 18) wetGlow[0] = 1;
+                if (dRear < 18) wetGlow[1] = 1;
+
+                createSplash(p.x, p.y);
+                p.y = -20 - Math.random() * 40;
+                p.x = Math.random() * (W + 400) - 200;
+              }
+            }
+          }
+
+          if (active) {
+            ctx1.lineCap = "round";
+            ctx1.lineWidth = 1.6;
+            const normUx = vx / vMag;
+            const normUy = vy / vMag;
+
+            for (const p of rain) {
+              const len = Math.min(55, (12 + vMag * 0.12) * p.lengthMod);
+              ctx1.strokeStyle = `rgba(186, 230, 253, ${p.alpha})`;
+              ctx1.beginPath();
+              ctx1.moveTo(p.x, p.y);
+              ctx1.lineTo(p.x - normUx * len, p.y - normUy * len);
+              ctx1.stroke();
+            }
+          }
+
+          ctx1.strokeStyle = "rgba(224, 242, 254, 0.7)";
+          ctx1.lineWidth = 1.2;
+          for (let i = splashes.length - 1; i >= 0; i--) {
+            const s = splashes[i];
+            s.life += dt;
+            s.x += s.vx * dt;
+            s.y += s.vy * dt;
+            s.vy += 180 * dt;
+            if (s.life > 0.25) {
+              splashes.splice(i, 1);
+              continue;
+            }
+            ctx1.beginPath();
+            ctx1.moveTo(s.x, s.y);
+            ctx1.lineTo(s.x - s.vx * 0.03, s.y - s.vy * 0.03);
+            ctx1.stroke();
+          }
+
+          ctx1.beginPath();
+          screenCar.forEach((pt, i) =>
+            i === 0 ? ctx1.moveTo(pt[0], pt[1]) : ctx1.lineTo(pt[0], pt[1]),
+          );
+          ctx1.closePath();
+          ctx1.fillStyle = "#f59e0b";
+          ctx1.fill();
+          ctx1.lineWidth = 2.5;
+          ctx1.strokeStyle = "#b45309";
+          ctx1.stroke();
+
+          const cabin = [screenCar[3], screenCar[4], screenCar[5], screenCar[6]];
+          const cabMidX = cabin.reduce((s, p) => s + p[0], 0) / 4;
+          const cabMidY = cabin.reduce((s, p) => s + p[1], 0) / 4;
+          ctx1.beginPath();
+          cabin.forEach((p, i) => {
+            const qx = cabMidX + (p[0] - cabMidX) * 0.82;
+            const qy = cabMidY + (p[1] - cabMidY) * 0.82;
+            i === 0 ? ctx1.moveTo(qx, qy) : ctx1.lineTo(qx, qy);
+          });
+          ctx1.closePath();
+          ctx1.fillStyle = "#bae6fd";
+          ctx1.fill();
+
+          wheelAngle += P.vc * 0.2 * dt;
+          [-74, 74].forEach((wx) => {
+            const [wpx, wpy] = toScreen([wx, 18]);
+            const r = 19 * scale;
+            ctx1.fillStyle = "#1e293b";
+            ctx1.beginPath();
+            ctx1.arc(wpx, wpy, r, 0, Math.PI * 2);
+            ctx1.fill();
+            ctx1.fillStyle = "#cbd5e1";
+            ctx1.beginPath();
+            ctx1.arc(wpx, wpy, r * 0.45, 0, Math.PI * 2);
+            ctx1.fill();
+
+            ctx1.strokeStyle = "#0f172a";
+            ctx1.lineWidth = 1.8;
+            for (let k = 0; k < 4; k++) {
+              const a = wheelAngle + (k * Math.PI) / 2;
+              ctx1.beginPath();
+              ctx1.moveTo(wpx, wpy);
+              ctx1.lineTo(
+                wpx + Math.cos(a) * r * 0.45,
+                wpy + Math.sin(a) * r * 0.45,
+              );
+              ctx1.stroke();
+            }
+          });
+
+          const drawGlass = (ptA, ptB, isWet, glowVal) => {
+            ctx1.save();
+            ctx1.lineCap = "round";
+            ctx1.lineWidth = 6 * scale;
+            ctx1.strokeStyle = isWet ? "#38bdf8" : "#94a3b8";
+            if (isWet) {
+              ctx1.shadowColor = "#0284c7";
+              ctx1.shadowBlur = 10 + glowVal * 15;
+            }
+            ctx1.beginPath();
+            ctx1.moveTo(ptA[0], ptA[1]);
+            ctx1.lineTo(ptB[0], ptB[1]);
+            ctx1.stroke();
+            ctx1.restore();
+          };
+
+          drawGlass(screenCar[3], screenCar[4], P.fw, wetGlow[0]);
+          drawGlass(screenCar[5], screenCar[6], P.rw, wetGlow[1]);
+
+          ctx1.strokeStyle = "#92400e";
+          ctx1.lineWidth = 4 * scale;
+          ctx1.beginPath();
+          ctx1.moveTo(screenCar[4][0], screenCar[4][1]);
+          ctx1.lineTo(screenCar[5][0], screenCar[5][1]);
+          ctx1.stroke();
+
+          ctx1.setLineDash([4, 4]);
+          ctx1.strokeStyle = "rgba(255, 255, 255, 0.7)";
+          ctx1.lineWidth = 1.2;
+          const fBase = screenCar[3],
+            rBase = screenCar[6];
+          ctx1.beginPath();
+          ctx1.moveTo(fBase[0], fBase[1]);
+          ctx1.lineTo(fBase[0], fBase[1] - 65 * scale);
+          ctx1.moveTo(rBase[0], rBase[1]);
+          ctx1.lineTo(rBase[0], rBase[1] - 65 * scale);
+          ctx1.stroke();
+          ctx1.setLineDash([]);
+
+          ctx1.font = "600 12px 'Kalpurush', 'Noto Serif Bengali', serif";
+          ctx1.fillStyle = "#ffffff";
+          ctx1.fillText(`θf = ${P.tf}°`, fBase[0] + 6, fBase[1] - 42 * scale);
+          ctx1.textAlign = "right";
+          ctx1.fillText(`θr = ${P.tr}°`, rBase[0] - 6, rBase[1] - 42 * scale);
+          ctx1.textAlign = "left";
+
+          ctx1.fillStyle = "#f8fafc";
+          ctx1.font = "600 13px 'Kalpurush', 'Noto Serif Bengali', serif";
+          ctx1.fillText(
+            `গাড়ির সাপেক্ষে আপাত উলম্ব কোণ α = ${f(Math.abs(P.alpha))}°`,
+            14,
+            26,
+          );
+        } else {
+          // ================== মানুষ ও ছাতা দৃশ্য ==================
+          drawUmbrellaPerson(scale, gy, cx, dt, active, vx, vy, vMag);
+        }
+      }
+
+      function drawUmbrellaPerson(scale, gy, cx, dt, active, vx, vy, vMag) {
+        const pScale = Math.min(1.15, W1 / 640);
+        walkCycle += (Math.abs(P.vc) * 0.35 + 2) * dt * 4;
+
+        // হাত এবং ছাতার শীর্ষবিন্দু (Apex) হিসাব
+        const hx = cx + 14 * pScale;
+        const hy = gy - 85 * pScale;
+        const shaftLen = 80 * pScale;
+        // ছাতার নতি কোণ: বৃষ্টি যে কোণে আসছে সরাসরি সেই অভিমুখী হয়ে ছাতাকে হেলাতে হবে
+        const thetaUmb = P.vr > 0 ? Math.atan2(-P.ux, P.vr) : 0;
+        const dx = Math.sin(thetaUmb);
+        const dy = -Math.cos(thetaUmb);
+        const apexX = hx + dx * shaftLen;
+        const apexY = hy + dy * shaftLen;
+
+        const cw = 68 * pScale; // ছাতার ক্যানোপির অর্ধ-প্রস্থ
+        const cd = 30 * pScale; // ছাতার ক্যানোপির গভীরতা
+
+        // বৃষ্টির কণা ছাতায় আঘাত করছে কিনা পরীক্ষা
+        if (active) {
+          for (const p of rain) {
+            p.x += vx * dt;
+            p.y += vy * dt;
+
+            if (p.y > gy) {
+              createSplash(p.x, gy);
+              p.y = -20 - Math.random() * 40;
+              p.x = Math.random() * (W1 + 400) - 200;
+              continue;
+            }
+            if (p.x < -200 || p.x > W1 + 200 || p.y < -50) {
+              p.y = -20 - Math.random() * 40;
+              p.x = Math.random() * (W1 + 400) - 200;
+              continue;
+            }
+
+            // ছাতায় বাধা পাওয়ার জ্যামিতিক হিসাব
+            const rx = p.x - apexX;
+            const ry = p.y - apexY;
+            const lx = rx * Math.cos(-thetaUmb) - ry * Math.sin(-thetaUmb);
+            const ly = rx * Math.sin(-thetaUmb) + ry * Math.cos(-thetaUmb);
+
+            if (
+              Math.abs(lx) <= cw + 4 &&
+              ly >= -10 * pScale &&
+              ly <= cd + 8 * pScale
+            ) {
+              createSplash(p.x, p.y);
+              p.y = -20 - Math.random() * 40;
+              p.x = Math.random() * (W1 + 400) - 200;
+            }
+          }
+        }
+
+        // বৃষ্টির রেখা আঁকা
+        if (active) {
+          ctx1.lineCap = "round";
+          ctx1.lineWidth = 1.6;
+          const normUx = vx / vMag;
+          const normUy = vy / vMag;
+
+          for (const p of rain) {
+            const len = Math.min(55, (12 + vMag * 0.12) * p.lengthMod);
+            ctx1.strokeStyle = `rgba(186, 230, 253, ${p.alpha})`;
+            ctx1.beginPath();
+            ctx1.moveTo(p.x, p.y);
+            ctx1.lineTo(p.x - normUx * len, p.y - normUy * len);
+            ctx1.stroke();
+          }
+        }
+
+        // স্প্ল্যাশ কণা আঁকা
+        ctx1.strokeStyle = "rgba(224, 242, 254, 0.7)";
+        ctx1.lineWidth = 1.2;
+        for (let i = splashes.length - 1; i >= 0; i--) {
+          const s = splashes[i];
+          s.life += dt;
+          s.x += s.vx * dt;
+          s.y += s.vy * dt;
+          s.vy += 180 * dt;
+          if (s.life > 0.25) {
+            splashes.splice(i, 1);
+            continue;
+          }
+          ctx1.beginPath();
+          ctx1.moveTo(s.x, s.y);
+          ctx1.lineTo(s.x - s.vx * 0.03, s.y - s.vy * 0.03);
+          ctx1.stroke();
+        }
+
+        // উলম্ব ড্যাশড নির্দেশক লাইন
+        ctx1.save();
+        ctx1.setLineDash([4, 4]);
+        ctx1.strokeStyle = "rgba(255, 255, 255, 0.6)";
+        ctx1.lineWidth = 1.4;
+        ctx1.beginPath();
+        ctx1.moveTo(apexX, apexY);
+        ctx1.lineTo(apexX, apexY + 75 * pScale);
+        ctx1.stroke();
+        ctx1.setLineDash([]);
+
+        // কোণ নির্দেশক বৃত্তচাপ (Arc)
+        if (P.vr > 0 && Math.abs(P.alpha) > 0.5) {
+          ctx1.strokeStyle = "#38bdf8";
+          ctx1.lineWidth = 2;
+          ctx1.beginPath();
+          const arcR = 42 * pScale;
+          const startAngle = Math.PI / 2; // খাড়া নিচের দিক
+          const endAngle = Math.PI / 2 + thetaUmb;
+          ctx1.arc(apexX, apexY, arcR, startAngle, endAngle, thetaUmb < 0);
+          ctx1.stroke();
+
+          // কোণ টেক্সট
+          ctx1.fillStyle = "#38bdf8";
+          ctx1.font = "bold 12px 'Kalpurush', 'Noto Serif Bengali', serif";
+          const labelX = apexX + (thetaUmb >= 0 ? 12 : -50) * pScale;
+          ctx1.fillText(
+            `α = ${f(Math.abs(P.alpha))}°`,
+            labelX,
+            apexY + 54 * pScale,
+          );
+        }
+        ctx1.restore();
+
+        // ১. মানুষ আঁকা (Animated Walking Human)
+        ctx1.save();
+        const hipX = cx,
+          hipY = gy - 58 * pScale;
+        const legAngleL = Math.sin(walkCycle) * 0.42;
+        const legAngleR = -Math.sin(walkCycle) * 0.42;
+
+        const drawLeg = (angle, color) => {
+          ctx1.strokeStyle = color;
+          ctx1.lineWidth = 8 * pScale;
+          ctx1.lineCap = "round";
+          const kneeX = hipX + Math.sin(angle) * 30 * pScale;
+          const kneeY = hipY + Math.cos(angle) * 30 * pScale;
+          const footX = kneeX + Math.sin(angle * 0.8) * 28 * pScale;
+          const footY = gy;
+          ctx1.beginPath();
+          ctx1.moveTo(hipX, hipY);
+          ctx1.lineTo(kneeX, kneeY);
+          ctx1.lineTo(footX, footY);
+          ctx1.stroke();
+
+          // জুতো
+          ctx1.fillStyle = "#0f172a";
+          ctx1.beginPath();
+          ctx1.ellipse(
+            footX + 4 * pScale,
+            footY - 2,
+            9 * pScale,
+            4 * pScale,
+            0,
+            0,
+            Math.PI * 2,
+          );
+          ctx1.fill();
+        };
+
+        drawLeg(legAngleL, "#1e293b"); // পেছনের পা
+        drawLeg(legAngleR, "#334155"); // সামনের পা
+
+        // ধড় / শরীর (Torso)
+        ctx1.fillStyle = "#0284c7"; // ব্লু জ্যাকেট
+        ctx1.beginPath();
+        if (ctx1.roundRect) {
+          ctx1.roundRect(
+            cx - 13 * pScale,
+            gy - 110 * pScale,
+            26 * pScale,
+            56 * pScale,
+            6 * pScale,
+          );
+        } else {
+          ctx1.rect(
+            cx - 13 * pScale,
+            gy - 110 * pScale,
+            26 * pScale,
+            56 * pScale,
+          );
+        }
+        ctx1.fill();
+
+        // বেল্ট / কোমর
+        ctx1.fillStyle = "#0f172a";
+        ctx1.fillRect(
+          cx - 13 * pScale,
+          gy - 62 * pScale,
+          26 * pScale,
+          6 * pScale,
+        );
+
+        // ঘাড় ও মাথা
+        ctx1.fillStyle = "#fed7aa"; // স্কিন টোন
+        ctx1.beginPath();
+        ctx1.arc(
+          cx + 2 * pScale,
+          gy - 124 * pScale,
+          13 * pScale,
+          0,
+          Math.PI * 2,
+        );
+        ctx1.fill();
+
+        // টুপি / চুল
+        ctx1.fillStyle = "#1e293b";
+        ctx1.beginPath();
+        ctx1.ellipse(
+          cx + 2 * pScale,
+          gy - 133 * pScale,
+          15 * pScale,
+          7 * pScale,
+          0,
+          0,
+          Math.PI * 2,
+        );
+        ctx1.fill();
+
+        // হাত
+        ctx1.strokeStyle = "#0284c7";
+        ctx1.lineWidth = 6 * pScale;
+        ctx1.lineCap = "round";
+        ctx1.beginPath();
+        ctx1.moveTo(cx + 8 * pScale, gy - 104 * pScale);
+        ctx1.lineTo(cx + 20 * pScale, gy - 92 * pScale);
+        ctx1.lineTo(hx, hy);
+        ctx1.stroke();
+
+        // হাতের তালু
+        ctx1.fillStyle = "#fed7aa";
+        ctx1.beginPath();
+        ctx1.arc(hx, hy, 4.5 * pScale, 0, Math.PI * 2);
+        ctx1.fill();
+        ctx1.restore();
+
+        // ২. ছাতা আঁকা (Rotated Umbrella)
+        ctx1.save();
+        ctx1.translate(apexX, apexY);
+        ctx1.rotate(thetaUmb);
+
+        // ছাতার ডাঁট (Shaft)
+        ctx1.strokeStyle = "#e2e8f0";
+        ctx1.lineWidth = 3.5 * pScale;
+        ctx1.lineCap = "round";
+        ctx1.beginPath();
+        ctx1.moveTo(0, 0);
+        ctx1.lineTo(0, shaftLen);
+        ctx1.stroke();
+
+        // বাঁকানো হাতল (Handle)
+        ctx1.strokeStyle = "#78350f";
+        ctx1.lineWidth = 4 * pScale;
+        ctx1.beginPath();
+        ctx1.arc(
+          6 * pScale,
+          shaftLen + 5 * pScale,
+          6 * pScale,
+          -Math.PI / 2,
+          Math.PI / 2,
+          false,
+        );
+        ctx1.stroke();
+
+        // ছাতার টিপ (Ferrule tip)
+        ctx1.strokeStyle = "#cbd5e1";
+        ctx1.lineWidth = 3 * pScale;
+        ctx1.beginPath();
+        ctx1.moveTo(0, 0);
+        ctx1.lineTo(0, -12 * pScale);
+        ctx1.stroke();
+
+        // ছাতার ক্যানোপি / গম্বুজ (Canopy Dome)
+        ctx1.beginPath();
+        ctx1.moveTo(-cw, cd);
+        ctx1.bezierCurveTo(
+          -cw * 0.45,
+          -cd * 0.9,
+          cw * 0.45,
+          -cd * 0.9,
+          cw,
+          cd,
+        );
+        ctx1.quadraticCurveTo(0, cd - 8 * pScale, -cw, cd);
+        ctx1.closePath();
+
+        const canopyGrad = ctx1.createLinearGradient(-cw, 0, cw, 0);
+        canopyGrad.addColorStop(0, "#0284c7");
+        canopyGrad.addColorStop(0.5, "#38bdf8");
+        canopyGrad.addColorStop(1, "#0284c7");
+        ctx1.fillStyle = canopyGrad;
+        ctx1.fill();
+        ctx1.lineWidth = 2 * pScale;
+        ctx1.strokeStyle = "#0369a1";
+        ctx1.stroke();
+
+        // রিবস
+        ctx1.strokeStyle = "rgba(255, 255, 255, 0.7)";
+        ctx1.lineWidth = 1.2 * pScale;
+        [-0.6, -0.2, 0.2, 0.6].forEach((f) => {
+          ctx1.beginPath();
+          ctx1.moveTo(0, -cd * 0.3);
+          ctx1.quadraticCurveTo(
+            f * cw * 0.5,
+            cd * 0.2,
+            f * cw,
+            cd - 2 * pScale,
+          );
+          ctx1.stroke();
+        });
+
+        ctx1.restore();
+
+        // ক্যানভাস ১ এর ওপরে ক্যাপশন
+        const dirText =
+          P.ux < 0 ? "সামনে থেকে পেছনের দিকে" : "পেছন থেকে সামনের দিকে";
+        ctx1.fillStyle = "#f8fafc";
+        ctx1.font = "600 13px 'Kalpurush', 'Noto Serif Bengali', serif";
+        ctx1.fillText(
+          `মানুষের সাপেক্ষে বৃষ্টির আপাত কোণ ও ছাতা ধরার দিক: α = ${f(Math.abs(P.alpha))}° (${dirText})`,
+          14,
+          26,
+        );
+      }
+
+      /* ================== Canvas 2: Vector Diagram ================== */
+      function drawVectorArrow(ctx, x0, y0, x1, y1, color, width, dash = []) {
+        const dx = x1 - x0,
+          dy = y1 - y0;
+        const len = Math.hypot(dx, dy);
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = width;
+        ctx.lineCap = "round";
+
+        if (len < 2) {
+          ctx.beginPath();
+          ctx.arc(x0, y0, 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+          return;
+        }
+
+        const angle = Math.atan2(dy, dx);
+        const headLen = Math.min(13, Math.max(9, len * 0.35));
+
+        ctx.setLineDash(dash);
+        ctx.beginPath();
+        ctx.moveTo(x0, y0);
+        ctx.lineTo(
+          x1 - Math.cos(angle) * (headLen * 0.6),
+          y1 - Math.sin(angle) * (headLen * 0.6),
+        );
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // মসৃণ প্রকৌশলীয় তীরের মুখ (Arrowhead)
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(
+          x1 - headLen * Math.cos(angle - 0.36),
+          y1 - headLen * Math.sin(angle - 0.36),
+        );
+        ctx.lineTo(
+          x1 - headLen * 0.45 * Math.cos(angle),
+          y1 - headLen * 0.45 * Math.sin(angle),
+        );
+        ctx.lineTo(
+          x1 - headLen * Math.cos(angle + 0.36),
+          y1 - headLen * Math.sin(angle + 0.36),
+        );
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // টেক্সট ব্যাজ ফাংশন: লেখার নিচে সুরক্ষিত ব্যাকগ্রাউন্ড দেয় যাতে ভেক্টরের নিচে ঢাকা না পড়ে
+      function drawBadge(
+        ctx,
+        text,
+        x,
+        y,
+        textColor,
+        bgColor = "rgba(255, 255, 255, 0.94)",
+        borderColor = "rgba(203, 213, 225, 0.85)",
+      ) {
+        ctx.save();
+        ctx.font =
+          "bold 12px 'Kalpurush', 'Noto Serif Bengali', 'IBM Plex Sans', serif";
+        const metrics = ctx.measureText(text);
+        const textWidth = metrics.width;
+        const padX = 6;
+        const padY = 3;
+        const boxW = textWidth + padX * 2;
+        const boxH = 18 + padY;
+        const boxX = x - boxW / 2;
+        const boxY = y - boxH / 2;
+
+        ctx.shadowColor = "rgba(0, 0, 0, 0.06)";
+        ctx.shadowBlur = 4;
+        ctx.shadowOffsetY = 1;
+
+        ctx.fillStyle = bgColor;
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        if (ctx.roundRect) {
+          ctx.roundRect(boxX, boxY, boxW, boxH, 4);
+        } else {
+          ctx.rect(boxX, boxY, boxW, boxH);
+        }
+        ctx.fill();
+        ctx.shadowColor = "transparent";
+        ctx.stroke();
+
+        ctx.fillStyle = textColor;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(text, x, y + 1);
+        ctx.restore();
+      }
+
+      function drawVectors() {
+        const ctx = ctx2,
+          W = W2,
+          H = H2;
+        ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+        ctx.clearRect(0, 0, W, H);
+
+        const isMobileScreen = W < 640;
+        const isStacked = viewMode === "both" && isMobileScreen;
+
+        // প্যানেল কনফিগারেশন নির্ধারণ
+        let panelsToDraw = [];
+        if (viewMode === "both") {
+          if (isStacked) {
+            panelsToDraw = [
+              { idx: 0, ox: W / 2, originY: 145, panelH: 270, halfW: W },
+              { idx: 1, ox: W / 2, originY: 445, panelH: 270, halfW: W },
+            ];
+          } else {
+            const halfW = W / 2;
+            panelsToDraw = [
+              {
+                idx: 0,
+                ox: halfW / 2,
+                originY: H / 2 + 10,
+                panelH: H,
+                halfW: halfW,
+              },
+              {
+                idx: 1,
+                ox: halfW + halfW / 2,
+                originY: H / 2 + 10,
+                panelH: H,
+                halfW: halfW,
+              },
+            ];
+          }
+        } else if (viewMode === "ground") {
+          panelsToDraw = [
+            { idx: 0, ox: W / 2, originY: H / 2 + 10, panelH: H, halfW: W },
+          ];
+        } else if (viewMode === "relative") {
+          panelsToDraw = [
+            { idx: 1, ox: W / 2, originY: H / 2 + 10, panelH: H, halfW: W },
+          ];
+        }
+
+        const maxVal =
+          Math.max(Math.abs(P.vc), Math.abs(P.vw), Math.abs(P.ux), P.vr, 12) *
+          1.38;
+
+        // বিভাজক রেখা আঁকা
+        if (viewMode === "both") {
+          ctx.strokeStyle = "#e2e8f0";
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          if (isStacked) {
+            ctx.moveTo(12, 290);
+            ctx.lineTo(W - 12, 290);
+          } else {
+            ctx.moveTo(W / 2, 8);
+            ctx.lineTo(W / 2, H - 8);
+          }
+          ctx.stroke();
+        }
+
+        // প্যানেলগুলো আঁকা
+        panelsToDraw.forEach(({ idx, ox, originY, panelH, halfW }) => {
+          const availW = halfW / 2 - 25;
+          const availH = panelH / 2 - 38;
+          const scale = Math.min(availW, availH) / maxVal;
+
+          // ১. গ্রিড লাইন আঁকা
+          ctx.strokeStyle = "#f8fafc";
+          ctx.lineWidth = 1;
+          for (let g = -Math.floor(maxVal / 5) * 5; g <= maxVal; g += 5) {
+            ctx.beginPath();
+            ctx.moveTo(ox + g * scale, originY - maxVal * scale);
+            ctx.lineTo(ox + g * scale, originY + maxVal * scale);
+            ctx.moveTo(ox - maxVal * scale, originY + g * scale);
+            ctx.lineTo(ox + maxVal * scale, originY + g * scale);
+            ctx.stroke();
+          }
+
+          // ২. অক্ষ রেখা আঁকা (+x, -x, +y, -y)
+          ctx.strokeStyle = "#94a3b8";
+          ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          ctx.moveTo(ox - maxVal * scale - 10, originY);
+          ctx.lineTo(ox + maxVal * scale + 10, originY);
+          ctx.moveTo(ox, originY - maxVal * scale - 10);
+          ctx.lineTo(ox, originY + maxVal * scale + 10);
+          ctx.stroke();
+
+          // ৩. শিরোনাম ও অক্ষ লেবেল
+          ctx.fillStyle = "#0f172a";
+          ctx.font = "bold 14px 'Kalpurush', 'Noto Serif Bengali', serif";
+          const titleY = isStacked && idx === 1 ? 316 : 24;
+          ctx.fillText(
+            idx === 0
+              ? "১. ভূমির নির্দেশ কাঠামো (Ground Frame)"
+              : "২. মানুষ বা গাড়ির নির্দেশ কাঠামো (Relative Frame)",
+            Math.max(14, ox - halfW / 2 + 14),
+            titleY,
+          );
+
+          ctx.fillStyle = "#64748b";
+          ctx.font = "600 11px IBM Plex Sans, sans-serif";
+          ctx.fillText("+x (î)", ox + maxVal * scale - 18, originY - 6);
+          ctx.fillText("+y (ĵ)", ox + 6, originY - maxVal * scale + 12);
+
+          // সাধারণ মূলবিন্দু O(0,0) চিহ্নিত করা
+          ctx.fillStyle = "#0f172a";
+          ctx.beginPath();
+          ctx.arc(ox, originY, 3.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#475569";
+          ctx.font = "bold 11px IBM Plex Sans, sans-serif";
+          ctx.fillText("O", ox - 12, originY - 8);
+
+          const toXY = (x, y) => [ox + x * scale, originY - y * scale];
+
+          // ================== চিত্র ১: ভূমির কাঠামো ==================
+          if (idx === 0) {
+            const ptVw = toXY(P.vw, 0);
+            const ptVc = toXY(P.vc, 0);
+            const ptVr = toXY(0, -P.vr); // বৃষ্টি খাড়া নিচে falling vertically along -j
+
+            // সকল ভেক্টর ঠিক মূলবিন্দু O(0,0) থেকে বের হচ্ছে
+            // ক. মানুষ/গাড়ির বেগ v_মা (মূলবিন্দু O থেকে)
+            drawVectorArrow(ctx, ox, originY, ptVc[0], ptVc[1], "#d97706", 3.5);
+            drawBadge(
+              ctx,
+              `v_মা = ${f(P.vc)} î`,
+              ptVc[0] - 8,
+              originY - 20,
+              "#b45309",
+            );
+
+            // খ. বাতাসের বেগ v_বা (মূলবিন্দু O থেকে)
+            drawVectorArrow(ctx, ox, originY, ptVw[0], ptVw[1], "#0d9488", 3);
+            drawBadge(
+              ctx,
+              `v_বা = ${f(P.vw)} î`,
+              ptVw[0],
+              originY + 20,
+              "#0f766e",
+            );
+
+            // গ. বৃষ্টির প্রকৃত বেগ v_বৃ (মূলবিন্দু O থেকে খাড়া নিচে)
+            drawVectorArrow(ctx, ox, originY, ptVr[0], ptVr[1], "#2563eb", 3.5);
+            drawBadge(
+              ctx,
+              `v_বৃ = -${f(P.vr)} ĵ`,
+              ptVr[0] + 36,
+              ptVr[1] - 10,
+              "#1d4ed8",
+            );
+          }
+
+          // ================== চিত্র ২: মানুষ/গাড়ির সাপেক্ষে আপেক্ষিক বেগ ==================
+          if (idx === 1) {
+            // ১. বৃষ্টির উল্লম্ব বেগ v_বৃ (মূলবিন্দু O থেকে খাড়া নিচে)
+            const ptVr = toXY(0, -P.vr);
+            drawVectorArrow(ctx, ox, originY, ptVr[0], ptVr[1], "#2563eb", 2.8);
+            drawBadge(
+              ctx,
+              `v_বৃ = -${f(P.vr)} ĵ`,
+              ptVr[0] + 38,
+              ptVr[1] - 10,
+              "#1d4ed8",
+            );
+
+            // ২. আপেক্ষিক অনুভূমিক বেগ u_x = (v_বা - v_মা) î (মূলবিন্দু O থেকে)
+            const ptUx = toXY(P.ux, 0);
+            drawVectorArrow(
+              ctx,
+              ox,
+              originY,
+              ptUx[0],
+              ptUx[1],
+              "#d97706",
+              3.2,
+            );
+            drawBadge(
+              ctx,
+              `u_x = ${f(P.ux)} î`,
+              ptUx[0] + (P.ux <= 0 ? -16 : 16),
+              originY - 20,
+              "#b45309",
+            );
+
+            // ৩. আপাত আপেক্ষিক বেগ ভেক্টর v_বা·বৃ·মা (মূলবিন্দু O থেকে)
+            const ptVrel = toXY(P.ux, -P.vr);
+
+            // ৪. সামান্তরিক/আয়তক্ষেত্র সূত্র সম্পূর্ণ করার ড্যাশড রেখা
+            ctx.setLineDash([5, 4]);
+            ctx.strokeStyle = "rgba(37, 99, 235, 0.45)";
+            ctx.lineWidth = 1.4;
+            ctx.beginPath();
+            ctx.moveTo(ptUx[0], ptUx[1]);
+            ctx.lineTo(ptVrel[0], ptVrel[1]);
+            ctx.stroke();
+
+            ctx.strokeStyle = "rgba(217, 119, 6, 0.45)";
+            ctx.lineWidth = 1.4;
+            ctx.beginPath();
+            ctx.moveTo(ptVr[0], ptVr[1]);
+            ctx.lineTo(ptVrel[0], ptVrel[1]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // আপাত আপেক্ষিক বেগ লাল ভেক্টর আঁকা (মূলবিন্দু O থেকে)
+            drawVectorArrow(
+              ctx,
+              ox,
+              originY,
+              ptVrel[0],
+              ptVrel[1],
+              "#e11d48",
+              4,
+            );
+
+            // উলম্বের সাথে কোণ α আঁকা
+            if (P.vr > 0) {
+              const startAng = Math.PI / 2; // খাড়া নিচে
+              const endAng = Math.atan2(P.vr, P.ux);
+              ctx.strokeStyle = "#e11d48";
+              ctx.lineWidth = 1.8;
+              ctx.beginPath();
+              ctx.arc(ox, originY, 34, startAng, endAng, P.ux > 0);
+              ctx.stroke();
+
+              ctx.fillStyle = "#e11d48";
+              ctx.font = "bold 12px 'Kalpurush', 'Noto Serif Bengali', serif";
+              const alphaX = ox + (P.ux >= 0 ? 16 : -26);
+              ctx.fillText(
+                `α = ${f(Math.abs(P.alpha))}°`,
+                alphaX,
+                originY + 34,
+              );
+            }
+
+            // লাল ভেক্টরের স্পষ্ট টেক্সট ব্যাজ
+            // কোনো ভেক্টরের নিচে যেন চাপা না পড়ে সেজন্য উপযুক্ত স্থানে স্থাপন
+            const badgeOffsetDx = P.ux <= 0 ? -24 : 24;
+            drawBadge(
+              ctx,
+              `v_বা·বৃ·মা (${f(P.mag)} m/s)`,
+              ptVrel[0] + badgeOffsetDx,
+              ptVrel[1] + 24,
+              "#be123c",
+              "rgba(255, 255, 255, 0.98)",
+              "#f43f5e",
+            );
+          }
+        });
+      }
+
+      /* ================== Main Animation Loop ================== */
+      let lastTime = performance.now();
+      function animate(currentTime) {
+        const dt = paused
+          ? 0
+          : Math.min(0.033, (currentTime - lastTime) / 1000);
+        lastTime = currentTime;
+
+        drawScene(dt);
+        drawVectors();
+
+        requestAnimationFrame(animate);
+      }
+
+      // ইনপুট ইভেন্ট লিসেনার
+      ["vc", "vw", "vr", "tf", "tr"].forEach((id) => {
+        $(id).addEventListener("input", readInputs);
+      });
+
+      // অ্যানিমেশন কন্ট্রোল
+      $("pause").addEventListener("click", () => {
+        paused = !paused;
+        $("pause").textContent = paused
+          ? "অ্যানিমেশন চালু করুন"
+          : "অ্যানিমেশন থামান";
+      });
+
+      $("reset").addEventListener("click", () => {
+        Object.keys(defaultCfg).forEach((k) => ($(k).value = defaultCfg[k]));
+        readInputs();
+      });
+
+      // সিচুয়েশন সুইচিং ইভেন্ট লিসেনার
+      $("btnSitCar").addEventListener("click", () => setSituation("car"));
+      $("btnSitUmbrella").addEventListener("click", () => setSituation("umbrella"));
+
+      // ভিউ টগল বাটন হ্যান্ডলার
+      function setViewMode(mode) {
+        viewMode = mode;
+        const btns = {
+          both: $("btnBoth"),
+          ground: $("btnGround"),
+          relative: $("btnRelative"),
+        };
+        Object.keys(btns).forEach((k) => {
+          if (k === mode) {
+            btns[k].className =
+              "px-2.5 py-1 rounded bg-white shadow-sm text-slate-800 transition font-bold";
+          } else {
+            btns[k].className =
+              "px-2.5 py-1 rounded hover:bg-white/60 text-slate-600 transition";
+          }
+        });
+        resizeCanvases();
+        readInputs();
+      }
+
+      $("btnBoth").addEventListener("click", () => setViewMode("both"));
+      $("btnGround").addEventListener("click", () => setViewMode("ground"));
+      $("btnRelative").addEventListener("click", () => setViewMode("relative"));
+
+      // উইন্ডো রিসাইজ
+      window.addEventListener("resize", () => {
+        resizeCanvases();
+        readInputs();
+      });
+
+      // প্রারম্ভিক লোডিং
+      window.addEventListener("load", () => {
+        resizeCanvases();
+        readInputs();
+        requestAnimationFrame(animate);
+        if (window.MathJax && MathJax.typesetPromise) {
+          MathJax.typesetPromise();
+        }
+      });
+    </script>
+  </body>
+</html>
