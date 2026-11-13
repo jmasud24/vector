@@ -149,7 +149,48 @@
       }
     </style>
   </head>
-  <body class="min-h-screen antialiased">
+  <body class="min-h-screen antialiased bg-slate-100">
+    <!-- গ্লোবাল নেভিগেশন বার (সিমুলেটর লিঙ্ক ও সুইচিং) -->
+    <nav
+      class="bg-white/95 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 shadow-sm"
+    >
+      <div
+        class="max-w-7xl mx-auto px-3 sm:px-4 py-2 flex items-center justify-between gap-3"
+      >
+        <div class="flex items-center gap-2.5">
+          <span
+            class="w-8 h-8 rounded-lg bg-indigo-600 text-white font-bold flex items-center justify-center text-base shadow-sm"
+            >⚛</span
+          >
+          <div>
+            <span
+              class="font-bold text-slate-800 text-sm sm:text-base block leading-tight"
+              >পদার্থবিজ্ঞান সিমুলেশন ল্যাব</span
+            >
+            <span class="text-[11px] text-slate-500 hidden sm:block"
+              >উচ্চ মাধ্যমিক পদার্থবিজ্ঞান ১ম পত্র (ভেক্টর ও গতিবিদ্যা)</span
+            >
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 sm:gap-2">
+          <a
+            href="index.html"
+            class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 bg-indigo-600 text-white shadow-sm"
+          >
+            <span>🚗</span>
+            <span>বৃষ্টি ও আপেক্ষিক বেগ</span>
+          </a>
+          <a
+            href="projectile.html"
+            class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 border border-slate-200"
+          >
+            <span>🎯</span>
+            <span>প্রাসের গতি</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
     <header class="max-w-7xl mx-auto px-3 sm:px-4 pt-5 sm:pt-6 pb-4">
       <div class="border-b border-slate-300 pb-3">
         <h1
@@ -170,19 +211,75 @@
       </div>
     </header>
 
+    <!-- মোবাইল ড্রয়ারের জন্য আবছা ব্যাকড্রপ (Mobile Drawer Backdrop) -->
+    <div
+      id="drawerBackdrop"
+      class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 transition-opacity duration-300 opacity-0 pointer-events-none lg:hidden"
+      aria-hidden="true"
+    ></div>
+
+    <!-- মোবাইল ফ্লোটিং অ্যাকশন বাটন (Mobile Floating Action Button) -->
+    <button
+      id="mobileFab"
+      type="button"
+      aria-label="ইনপুট পরিবর্তন করুন"
+      class="lg:hidden fixed bottom-5 right-5 z-40 flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 active:scale-95 text-white font-bold px-4 py-2.5 rounded-full shadow-2xl border border-indigo-300/40 transition-all duration-200 cursor-pointer"
+    >
+      <span class="text-base animate-pulse">⚙️</span>
+      <span class="text-xs sm:text-sm font-semibold tracking-wide"
+        >ইনপুট পরিবর্তন</span
+      >
+    </button>
+
     <main
       class="max-w-7xl mx-auto px-3 sm:px-4 pb-12 grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6"
     >
-      <!-- বাম পাশের কন্ট্রোল প্যানেল (ইনপুট বক্স) -->
+      <!-- বাম পাশের কন্ট্রোল প্যানেল (ইনপুট বক্স) - মোবাইলে স্লাইড-ওভার ড্রয়ার / ডেস্কটপে স্টিকি সাইডবার -->
       <aside
-        class="card p-4 sm:p-5 h-fit lg:sticky lg:top-4 order-2 lg:order-1"
+        id="controlPanel"
+        class="fixed inset-y-0 left-0 z-50 w-[88vw] max-w-xs sm:max-w-sm bg-white p-4 sm:p-5 overflow-y-auto shadow-2xl transition-transform duration-300 ease-in-out -translate-x-full rounded-r-2xl lg:rounded-xl border-r lg:border border-slate-200 lg:translate-x-0 lg:static lg:w-auto lg:max-w-none lg:shadow-none lg:z-auto lg:overflow-visible lg:h-fit lg:sticky lg:top-4 card"
       >
-        <h2
-          class="text-lg sm:text-xl font-bold text-slate-800 mb-4 border-b pb-2 flex items-center justify-between"
+        <div class="flex items-center justify-between border-b pb-2.5 mb-4">
+          <div>
+            <h2
+              class="text-lg sm:text-xl font-bold text-slate-800 flex items-center gap-1.5"
+            >
+              <span>চলকের মান ইনপুট</span>
+            </h2>
+            <span class="text-xs font-normal text-slate-500"
+              >SI একক (m/s) • তাৎক্ষণিক আপডেট</span
+            >
+          </div>
+          <!-- মোবাইল ড্রয়ার ক্লোজ বাটন -->
+          <button
+            id="closeDrawerBtn"
+            type="button"
+            aria-label="ড্রয়ার বন্ধ করুন"
+            class="lg:hidden w-8 h-8 flex items-center justify-center rounded-full text-slate-500 hover:text-slate-800 hover:bg-slate-100 active:bg-slate-200 transition text-base font-bold cursor-pointer"
+          >
+            ✕
+          </button>
+        </div>
+
+        <!-- ড্রয়ারে সিচুয়েশন সুইচিং (গাড়ি / ছাতা) -->
+        <div
+          class="mb-4 bg-slate-100 p-1 rounded-xl flex gap-1 border border-slate-200"
         >
-          <span>চলকের মান ইনপুট</span>
-          <span class="text-xs font-normal text-slate-500">SI একক (m/s)</span>
-        </h2>
+          <button
+            id="drawerSitCar"
+            type="button"
+            class="flex-1 py-1.5 px-2 rounded-lg text-xs font-bold bg-indigo-600 text-white shadow-sm flex items-center justify-center gap-1.5 transition cursor-pointer"
+          >
+            <span>🚗</span><span>গাড়ি মোড</span>
+          </button>
+          <button
+            id="drawerSitUmbrella"
+            type="button"
+            class="flex-1 py-1.5 px-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition cursor-pointer"
+          >
+            <span>☂️ ছাতা মোড</span>
+          </button>
+        </div>
 
         <div class="space-y-4 text-sm">
           <!-- Car / Man velocity -->
@@ -315,10 +412,49 @@
             কোণগুলো উলম্ব রেখা থেকে পরিমাপকৃত।
           </p>
         </div>
+
+        <!-- মোবাইলের জন্য সম্পন্ন ও ফলাফল দেখুন বাটন -->
+        <div
+          class="lg:hidden mt-4 pt-3 border-t border-slate-200 sticky bottom-0 bg-white/95 backdrop-blur-sm pb-1"
+        >
+          <button
+            id="closeDrawerDoneBtn"
+            type="button"
+            class="w-full bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 active:scale-[0.98] text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm cursor-pointer"
+          >
+            <span>✓ সম্পন্ন ও ফলাফল দেখুন</span>
+          </button>
+        </div>
       </aside>
 
       <!-- ডান পাশের ভিজ্যুয়ালাইজেশন ও গণিত শাখা -->
-      <section class="space-y-5 min-w-0 order-1 lg:order-2">
+      <section class="space-y-5 min-w-0">
+        <!-- মোবাইলের জন্য কুইক সামারি ও ইনপুট ওপেন বার -->
+        <div
+          class="lg:hidden p-3 bg-gradient-to-r from-indigo-50/90 via-blue-50/80 to-slate-50 border border-indigo-200/80 rounded-xl flex items-center justify-between gap-3 shadow-sm"
+        >
+          <div class="min-w-0 flex-1">
+            <div
+              class="flex items-center gap-1.5 text-xs font-bold text-indigo-950"
+            >
+              <span>⚙️ বর্তমান ইনপুট:</span>
+            </div>
+            <div
+              id="mobileSummaryText"
+              class="text-[11px] text-slate-600 font-mono truncate mt-0.5"
+            >
+              v_মা = 12 | v_বা = 4 | v_বৃ = 10 (m/s)
+            </div>
+          </div>
+          <button
+            id="openDrawerTop"
+            type="button"
+            class="shrink-0 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm transition flex items-center gap-1 cursor-pointer"
+          >
+            <span>✏️ মান বদলান</span>
+          </button>
+        </div>
+
         <!-- ফলাফল স্ট্যাটাস কার্ড -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" aria-live="polite">
           <div id="chipF" class="chip"></div>
@@ -342,13 +478,25 @@
         </div>
 
         <!-- সিচুয়েশন সুইচিং অপশন (গাড়ি vs ছাতা) -->
-        <div class="card p-3 sm:p-4 bg-gradient-to-r from-slate-900 to-indigo-950 text-white border-none shadow-md">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div
+          class="card p-3 sm:p-4 bg-gradient-to-r from-slate-900 to-indigo-950 text-white border-none shadow-md"
+        >
+          <div
+            class="flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+          >
             <div>
-              <span class="text-[11px] font-bold tracking-wider text-indigo-300 uppercase">সিচুয়েশন নির্বাচন (Situation Mode):</span>
-              <p class="text-xs text-slate-300 mt-0.5">গাড়ির উইন্ডশিল্ড অথবা মানুষের ছাতা ধরার অ্যানিমেশনের মধ্যে পরিবর্তন করুন</p>
+              <span
+                class="text-[11px] font-bold tracking-wider text-indigo-300 uppercase"
+                >সিচুয়েশন নির্বাচন (Situation Mode):</span
+              >
+              <p class="text-xs text-slate-300 mt-0.5">
+                গাড়ির উইন্ডশিল্ড অথবা মানুষের ছাতা ধরার অ্যানিমেশনের মধ্যে
+                পরিবর্তন করুন
+              </p>
             </div>
-            <div class="inline-flex rounded-lg border border-indigo-700/60 p-1 bg-slate-950/70 shadow-inner text-xs sm:text-sm font-semibold self-start sm:self-auto">
+            <div
+              class="inline-flex rounded-lg border border-indigo-700/60 p-1 bg-slate-950/70 shadow-inner text-xs sm:text-sm font-semibold self-start sm:self-auto"
+            >
               <button
                 id="btnSitCar"
                 class="px-3.5 py-2 rounded-md bg-indigo-600 text-white shadow-sm flex items-center gap-2 transition"
@@ -367,9 +515,14 @@
 
         <!-- Canvas 1: আপেক্ষিক গতি ও অ্যানিমেশন -->
         <div class="card p-3 sm:p-4">
-          <div class="mb-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+          <div
+            class="mb-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-1"
+          >
             <div>
-              <h2 id="c1Title" class="text-lg sm:text-xl font-bold text-slate-800">
+              <h2
+                id="c1Title"
+                class="text-lg sm:text-xl font-bold text-slate-800"
+              >
                 মানুষ/গাড়ির সাপেক্ষে বৃষ্টির অ্যানিমেশন (Car Frame)
               </h2>
               <p id="c1Sub" class="text-xs text-slate-500">
@@ -377,7 +530,10 @@
                 আপাত আপেক্ষিক বেগ ভেক্টর $\vec{v}_{\text{বা·বৃ·মা}}$ বরাবর পড়ছে।
               </p>
             </div>
-            <span id="c1Badge" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 self-start sm:self-auto border border-amber-300 whitespace-nowrap">
+            <span
+              id="c1Badge"
+              class="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 self-start sm:self-auto border border-amber-300 whitespace-nowrap"
+            >
               🚗 গাড়ি মোড সক্রিয়
             </span>
           </div>
@@ -465,9 +621,6 @@
             <!-- MathJax এর মাধ্যমে এখানে নিরাপদে গণিত রেন্ডার হবে -->
           </div>
         </div>
-
-        
-        </div>
       </section>
     </main>
 
@@ -516,6 +669,23 @@
             "text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-900 self-start sm:self-auto border border-emerald-300 whitespace-nowrap";
           $("c1Badge").textContent = "☂️ ছাতা মোড সক্রিয়";
         }
+
+        const dCar = $("drawerSitCar"),
+          dUmb = $("drawerSitUmbrella");
+        if (dCar && dUmb) {
+          if (sit === "car") {
+            dCar.className =
+              "flex-1 py-1.5 px-2 rounded-lg text-xs font-bold bg-indigo-600 text-white shadow-sm flex items-center justify-center gap-1.5 transition cursor-pointer";
+            dUmb.className =
+              "flex-1 py-1.5 px-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition cursor-pointer";
+          } else {
+            dCar.className =
+              "flex-1 py-1.5 px-2 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5 transition cursor-pointer";
+            dUmb.className =
+              "flex-1 py-1.5 px-2 rounded-lg text-xs font-bold bg-emerald-600 text-white shadow-sm flex items-center justify-center gap-1.5 transition cursor-pointer";
+          }
+        }
+
         updateUI();
       }
 
@@ -537,8 +707,14 @@
 
         P = { vc, vw, vr, tf, tr, ux, mag, alpha, tanF, tanR, fw, rw };
 
+        const mobSum = $("mobileSummaryText");
+        if (mobSum) {
+          mobSum.textContent = `v_মা=${vc} | v_বা=${vw} | v_বৃ=${vr} (m/s) | θ_f=${tf}° | θ_r=${tr}°`;
+        }
+
         updateUI();
         queueMathJax();
+        drawVectors();
       }
 
       function updateUI() {
@@ -582,11 +758,13 @@
           $("chipF").innerHTML =
             `<b class="text-base">☂️ ছাতা ধরার কোণ</b><div class="text-xs mt-1 font-semibold text-emerald-800">উলম্বের সাথে ${absAlpha}° (${dirText})</div>`;
 
-          $("chipR").className = "chip bg-blue-50 border-blue-400 text-blue-950";
+          $("chipR").className =
+            "chip bg-blue-50 border-blue-400 text-blue-950";
           $("chipR").innerHTML =
             `<b class="text-base">💧 বৃষ্টির আপাত বেগ</b><div class="text-xs mt-1 font-semibold text-blue-800">|v_বা·বৃ·মা| = ${f(P.mag)} m/s</div>`;
 
-          $("chipT").className = "chip bg-teal-50 border-teal-400 text-teal-950";
+          $("chipT").className =
+            "chip bg-teal-50 border-teal-400 text-teal-950";
           $("chipT").innerHTML =
             `<b class="text-base">🛡️ ব্যক্তির সুরক্ষা</b><div class="text-xs mt-1 font-semibold text-teal-800">${P.vr > 0 ? "ছাতা ঠিকমতো ধরায় ব্যক্তি শুকনো থাকবে" : "বৃষ্টি নেই, ব্যক্তি শুকনো"}</div>`;
 
@@ -725,7 +903,7 @@
         DPR = 1;
 
       function resizeCanvases() {
-        DPR = window.devicePixelRatio || 1;
+        DPR = Math.min(2, window.devicePixelRatio || 1);
         const p1 = c1.parentElement.clientWidth - 24;
         W1 = Math.max(300, p1);
         W2 = W1;
@@ -751,9 +929,10 @@
         c2.style.height = H2 + "px";
 
         initRain();
+        drawVectors();
       }
 
-      const RAIN_COUNT = 280;
+      const RAIN_COUNT = window.innerWidth < 640 ? 110 : 180;
       let rain = [],
         splashes = [],
         wetGlow = [0, 0],
@@ -867,9 +1046,21 @@
           const toScreen = (p) => [cx + scale * p[0], gy - scale * p[1]];
           const carLoc = localCarPolys();
           const screenCar = carLoc.map(toScreen);
+          let minCarX = 1e9,
+            maxCarX = -1e9,
+            minCarY = 1e9,
+            maxCarY = -1e9;
+          for (let i = 0; i < screenCar.length; i++) {
+            const pt = screenCar[i];
+            if (pt[0] < minCarX) minCarX = pt[0];
+            if (pt[0] > maxCarX) maxCarX = pt[0];
+            if (pt[1] < minCarY) minCarY = pt[1];
+            if (pt[1] > maxCarY) maxCarY = pt[1];
+          }
 
           if (active) {
-            for (const p of rain) {
+            for (let i = 0; i < rain.length; i++) {
+              const p = rain[i];
               p.x += vx * dt;
               p.y += vy * dt;
 
@@ -885,25 +1076,33 @@
                 continue;
               }
 
-              if (pointInPolygon(p.x, p.y, screenCar)) {
-                const dFront = distToSegment(
-                  p.x,
-                  p.y,
-                  screenCar[3],
-                  screenCar[4],
-                );
-                const dRear = distToSegment(
-                  p.x,
-                  p.y,
-                  screenCar[5],
-                  screenCar[6],
-                );
-                if (dFront < 18) wetGlow[0] = 1;
-                if (dRear < 18) wetGlow[1] = 1;
+              // ফাস্ট বাউন্ডিং বক্স টেস্ট (AABB) যাতে অপ্রয়োজনীয় পলিগন গণনা না হয়
+              if (
+                p.x >= minCarX - 10 &&
+                p.x <= maxCarX + 10 &&
+                p.y >= minCarY - 10 &&
+                p.y <= maxCarY + 10
+              ) {
+                if (pointInPolygon(p.x, p.y, screenCar)) {
+                  const dFront = distToSegment(
+                    p.x,
+                    p.y,
+                    screenCar[3],
+                    screenCar[4],
+                  );
+                  const dRear = distToSegment(
+                    p.x,
+                    p.y,
+                    screenCar[5],
+                    screenCar[6],
+                  );
+                  if (dFront < 18) wetGlow[0] = 1;
+                  if (dRear < 18) wetGlow[1] = 1;
 
-                createSplash(p.x, p.y);
-                p.y = -20 - Math.random() * 40;
-                p.x = Math.random() * (W + 400) - 200;
+                  createSplash(p.x, p.y);
+                  p.y = -20 - Math.random() * 40;
+                  p.x = Math.random() * (W + 400) - 200;
+                }
               }
             }
           }
@@ -911,17 +1110,17 @@
           if (active) {
             ctx1.lineCap = "round";
             ctx1.lineWidth = 1.6;
+            ctx1.strokeStyle = "rgba(186, 230, 253, 0.65)";
             const normUx = vx / vMag;
             const normUy = vy / vMag;
-
-            for (const p of rain) {
+            ctx1.beginPath();
+            for (let i = 0; i < rain.length; i++) {
+              const p = rain[i];
               const len = Math.min(55, (12 + vMag * 0.12) * p.lengthMod);
-              ctx1.strokeStyle = `rgba(186, 230, 253, ${p.alpha})`;
-              ctx1.beginPath();
               ctx1.moveTo(p.x, p.y);
               ctx1.lineTo(p.x - normUx * len, p.y - normUy * len);
-              ctx1.stroke();
             }
+            ctx1.stroke();
           }
 
           ctx1.strokeStyle = "rgba(224, 242, 254, 0.7)";
@@ -953,7 +1152,12 @@
           ctx1.strokeStyle = "#b45309";
           ctx1.stroke();
 
-          const cabin = [screenCar[3], screenCar[4], screenCar[5], screenCar[6]];
+          const cabin = [
+            screenCar[3],
+            screenCar[4],
+            screenCar[5],
+            screenCar[6],
+          ];
           const cabMidX = cabin.reduce((s, p) => s + p[0], 0) / 4;
           const cabMidY = cabin.reduce((s, p) => s + p[1], 0) / 4;
           ctx1.beginPath();
@@ -1106,21 +1310,21 @@
           }
         }
 
-        // বৃষ্টির রেখা আঁকা
+        // বৃষ্টির রেখা আঁকা (Batched Stroke)
         if (active) {
           ctx1.lineCap = "round";
           ctx1.lineWidth = 1.6;
+          ctx1.strokeStyle = "rgba(186, 230, 253, 0.65)";
           const normUx = vx / vMag;
           const normUy = vy / vMag;
-
-          for (const p of rain) {
+          ctx1.beginPath();
+          for (let i = 0; i < rain.length; i++) {
+            const p = rain[i];
             const len = Math.min(55, (12 + vMag * 0.12) * p.lengthMod);
-            ctx1.strokeStyle = `rgba(186, 230, 253, ${p.alpha})`;
-            ctx1.beginPath();
             ctx1.moveTo(p.x, p.y);
             ctx1.lineTo(p.x - normUx * len, p.y - normUy * len);
-            ctx1.stroke();
           }
+          ctx1.stroke();
         }
 
         // স্প্ল্যাশ কণা আঁকা
@@ -1327,14 +1531,7 @@
         // ছাতার ক্যানোপি / গম্বুজ (Canopy Dome)
         ctx1.beginPath();
         ctx1.moveTo(-cw, cd);
-        ctx1.bezierCurveTo(
-          -cw * 0.45,
-          -cd * 0.9,
-          cw * 0.45,
-          -cd * 0.9,
-          cw,
-          cd,
-        );
+        ctx1.bezierCurveTo(-cw * 0.45, -cd * 0.9, cw * 0.45, -cd * 0.9, cw, cd);
         ctx1.quadraticCurveTo(0, cd - 8 * pScale, -cw, cd);
         ctx1.closePath();
 
@@ -1650,15 +1847,7 @@
 
             // ২. আপেক্ষিক অনুভূমিক বেগ u_x = (v_বা - v_মা) î (মূলবিন্দু O থেকে)
             const ptUx = toXY(P.ux, 0);
-            drawVectorArrow(
-              ctx,
-              ox,
-              originY,
-              ptUx[0],
-              ptUx[1],
-              "#d97706",
-              3.2,
-            );
+            drawVectorArrow(ctx, ox, originY, ptUx[0], ptUx[1], "#d97706", 3.2);
             drawBadge(
               ctx,
               `u_x = ${f(P.ux)} î`,
@@ -1743,7 +1932,6 @@
         lastTime = currentTime;
 
         drawScene(dt);
-        drawVectors();
 
         requestAnimationFrame(animate);
       }
@@ -1768,7 +1956,13 @@
 
       // সিচুয়েশন সুইচিং ইভেন্ট লিসেনার
       $("btnSitCar").addEventListener("click", () => setSituation("car"));
-      $("btnSitUmbrella").addEventListener("click", () => setSituation("umbrella"));
+      $("btnSitUmbrella").addEventListener("click", () =>
+        setSituation("umbrella"),
+      );
+      $("drawerSitCar")?.addEventListener("click", () => setSituation("car"));
+      $("drawerSitUmbrella")?.addEventListener("click", () =>
+        setSituation("umbrella"),
+      );
 
       // ভিউ টগল বাটন হ্যান্ডলার
       function setViewMode(mode) {
@@ -1799,6 +1993,38 @@
       window.addEventListener("resize", () => {
         resizeCanvases();
         readInputs();
+      });
+
+      // মোবাইল স্লাইড-ওভার ড্রয়ার কন্ট্রোল
+      function openMobileDrawer() {
+        const panel = $("controlPanel");
+        const backdrop = $("drawerBackdrop");
+        if (!panel || !backdrop) return;
+        panel.classList.remove("-translate-x-full");
+        panel.classList.add("translate-x-0");
+        backdrop.classList.remove("opacity-0", "pointer-events-none");
+        backdrop.classList.add("opacity-100", "pointer-events-auto");
+        document.body.classList.add("overflow-hidden");
+      }
+
+      function closeMobileDrawer() {
+        const panel = $("controlPanel");
+        const backdrop = $("drawerBackdrop");
+        if (!panel || !backdrop) return;
+        panel.classList.remove("translate-x-0");
+        panel.classList.add("-translate-x-full");
+        backdrop.classList.remove("opacity-100", "pointer-events-auto");
+        backdrop.classList.add("opacity-0", "pointer-events-none");
+        document.body.classList.remove("overflow-hidden");
+      }
+
+      $("mobileFab")?.addEventListener("click", openMobileDrawer);
+      $("openDrawerTop")?.addEventListener("click", openMobileDrawer);
+      $("closeDrawerBtn")?.addEventListener("click", closeMobileDrawer);
+      $("closeDrawerDoneBtn")?.addEventListener("click", closeMobileDrawer);
+      $("drawerBackdrop")?.addEventListener("click", closeMobileDrawer);
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeMobileDrawer();
       });
 
       // প্রারম্ভিক লোডিং
